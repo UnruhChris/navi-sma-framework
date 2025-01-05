@@ -1,7 +1,6 @@
 # Navi.py: GUI principale del framework Navi
 import sys
 import pandas as pd
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QPushButton, 
     QFileDialog, QLabel, QCheckBox, QTextEdit, QGridLayout, QComboBox, QMessageBox
@@ -15,8 +14,7 @@ from preprocessing import (
     remove_html_tags, remove_punctuation, remove_hashtags_urls, 
     remove_stopwords, remove_numbers, remove_emojis
 )
-from flair.models import TextClassifier
-from flair.data import Sentence
+from sentiment_analysis import (sa_flair, sa_vader, sa_distilbert)
 
 
 class NaviGUI(QMainWindow):
@@ -55,14 +53,6 @@ class SentimentAnalysisTab(QWidget):
             "emojis_removed": 0,
         }
 
-        # Inizializzazione dei modelli
-        self.vader_analyzer = SentimentIntensityAnalyzer()
-        from flair.models import TextClassifier
-        from flair.data import Sentence
-        self.flair_classifier = TextClassifier.load("sentiment")
-
-        from transformers import pipeline
-        self.distilbert_classifier = pipeline("sentiment-analysis")
 
         # Sezione 1: Caricamento Dataset e Modello
         self.dataset_section = QWidget()
@@ -228,40 +218,13 @@ class SentimentAnalysisTab(QWidget):
 
 
         if selected_model == "VADER" and self.dataframe is not None:
-            analyzer = SentimentIntensityAnalyzer()
-
-            def get_sentiment_scores(text):
-                if not isinstance(text, str):
-                    return None
-                return analyzer.polarity_scores(text)
-
-            self.dataframe['sentiment_scores'] = self.dataframe[selected_column].apply(get_sentiment_scores)
-            self.dataframe['compound_score'] = self.dataframe['sentiment_scores'].apply(lambda x: x['compound'] if x else None)
-            self.dataframe['positive_score'] = self.dataframe['sentiment_scores'].apply(lambda x: x['pos'] if x else None)
-            self.dataframe['neutral_score'] = self.dataframe['sentiment_scores'].apply(lambda x: x['neu'] if x else None)
-            self.dataframe['negative_score'] = self.dataframe['sentiment_scores'].apply(lambda x: x['neg'] if x else None)
+            self.dataframe = sa_vader(self.dataframe, selected_column)
 
         elif selected_model == "Flair":
-            def get_flair_sentiment(text):
-                if not isinstance(text, str):
-                    return None
-                sentence = Sentence(text)
-                self.flair_classifier.predict(sentence)
-                label = sentence.labels[0].value
-                score = sentence.labels[0].score
-                return {"label": label, "score": score}
-
-            self.dataframe["flair_sentiment"] = self.dataframe[selected_column].apply(get_flair_sentiment)
+            self.dataframe = sa_flair(self.dataframe, selected_column)
 
         elif selected_model == "DistilBERT":
-            def get_distilbert_sentiment(text):
-                if not isinstance(text, str):
-                    return None
-                result = self.distilbert_classifier(text)[0]
-                return {"label": result["label"], "score": result["score"]}
-
-            self.dataframe["distilbert_sentiment"] = self.dataframe[selected_column].apply(get_distilbert_sentiment)
-
+            self.dataframe = sa_distilbert(self.dataframe, selected_column)
         
 
         self.stats_view.append("Analisi completata. Generazione del grafico dei risultati...")
