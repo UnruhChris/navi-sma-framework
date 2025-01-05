@@ -21,7 +21,7 @@ Navi is a user-friendly framework designed for Social Media Analysis (SMA), prov
 Clone the repository and navigate to the folder:
 
 ```bash
-git clone https://github.com/yourusername/Navi.git
+git clone https://github.com/UnruhChris/Navi.git
 cd Navi
 ```
 
