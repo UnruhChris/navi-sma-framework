@@ -15,6 +15,9 @@ from preprocessing import (
     remove_html_tags, remove_punctuation, remove_hashtags_urls, 
     remove_stopwords, remove_numbers, remove_emojis
 )
+from flair.models import TextClassifier
+from flair.data import Sentence
+
 
 class NaviGUI(QMainWindow):
     def __init__(self):
@@ -52,6 +55,15 @@ class SentimentAnalysisTab(QWidget):
             "emojis_removed": 0,
         }
 
+        # Inizializzazione dei modelli
+        self.vader_analyzer = SentimentIntensityAnalyzer()
+        from flair.models import TextClassifier
+        from flair.data import Sentence
+        self.flair_classifier = TextClassifier.load("sentiment")
+
+        from transformers import pipeline
+        self.distilbert_classifier = pipeline("sentiment-analysis")
+
         # Sezione 1: Caricamento Dataset e Modello
         self.dataset_section = QWidget()
         self.dataset_layout = QVBoxLayout()
@@ -63,7 +75,8 @@ class SentimentAnalysisTab(QWidget):
         self.select_column_dropdown.setEnabled(False)
 
         self.select_model_dropdown = QComboBox()
-        self.select_model_dropdown.addItems(["VADER"])
+        self.select_model_dropdown.addItems(["VADER", "Flair", "DistilBERT"])
+
 
         self.run_analysis_btn = QPushButton("Avvia analisi")
         self.run_analysis_btn.clicked.connect(self.run_analysis)
@@ -211,10 +224,10 @@ class SentimentAnalysisTab(QWidget):
     def run_analysis(self):
         selected_model = self.select_model_dropdown.currentText()
         selected_column = self.select_column_dropdown.currentText()
+        self.stats_view.append(f"\nEsecuzione analisi sentiment con il modello: {selected_model} sulla colonna: {selected_column}...")
+
 
         if selected_model == "VADER" and self.dataframe is not None:
-            self.stats_view.append(f"\nEsecuzione analisi sentiment con il modello: {selected_model} sulla colonna: {selected_column}...")
-
             analyzer = SentimentIntensityAnalyzer()
 
             def get_sentiment_scores(text):
@@ -228,22 +241,72 @@ class SentimentAnalysisTab(QWidget):
             self.dataframe['neutral_score'] = self.dataframe['sentiment_scores'].apply(lambda x: x['neu'] if x else None)
             self.dataframe['negative_score'] = self.dataframe['sentiment_scores'].apply(lambda x: x['neg'] if x else None)
 
-            self.stats_view.append("Analisi completata. Generazione del grafico dei risultati...")
-            self.show_results()
-            self.save_results_btn.setEnabled(True)
+        elif selected_model == "Flair":
+            def get_flair_sentiment(text):
+                if not isinstance(text, str):
+                    return None
+                sentence = Sentence(text)
+                self.flair_classifier.predict(sentence)
+                label = sentence.labels[0].value
+                score = sentence.labels[0].score
+                return {"label": label, "score": score}
+
+            self.dataframe["flair_sentiment"] = self.dataframe[selected_column].apply(get_flair_sentiment)
+
+        elif selected_model == "DistilBERT":
+            def get_distilbert_sentiment(text):
+                if not isinstance(text, str):
+                    return None
+                result = self.distilbert_classifier(text)[0]
+                return {"label": result["label"], "score": result["score"]}
+
+            self.dataframe["distilbert_sentiment"] = self.dataframe[selected_column].apply(get_distilbert_sentiment)
+
+        
+
+        self.stats_view.append("Analisi completata. Generazione del grafico dei risultati...")
+        self.show_results()
+        self.save_results_btn.setEnabled(True)
 
     def show_results(self):
-        positive = self.dataframe['positive_score'].mean()
-        neutral = self.dataframe['neutral_score'].mean()
-        negative = self.dataframe['negative_score'].mean()
+        selected_model = self.select_model_dropdown.currentText()
 
-        self.figure.clear()
-        ax = self.figure.add_subplot(111)
-        sentiments = ['Positivo', 'Neutrale', 'Negativo']
-        values = [positive, neutral, negative]
-        ax.pie(values, labels=sentiments, autopct='%1.1f%%', colors=['green', 'blue', 'red'], startangle=90)
-        ax.set_title("Distribuzione Analisi Sentiment")
+        if selected_model == "VADER":
+            positive = self.dataframe['positive_score'].mean()
+            neutral = self.dataframe['neutral_score'].mean()
+            negative = self.dataframe['negative_score'].mean()
+
+            self.figure.clear()
+            ax = self.figure.add_subplot(111)
+            sentiments = ['Positivo', 'Neutrale', 'Negativo']
+            values = [positive, neutral, negative]
+            ax.pie(values, labels=sentiments, autopct='%1.1f%%', colors=['green', 'blue', 'red'], startangle=90)
+            ax.set_title("Distribuzione Analisi Sentiment (VADER)")
+
+        elif selected_model == "Flair":
+            positive = self.dataframe["flair_sentiment"].apply(lambda x: x["score"] if x and x["label"] == "POSITIVE" else 0).mean()
+            negative = self.dataframe["flair_sentiment"].apply(lambda x: x["score"] if x and x["label"] == "NEGATIVE" else 0).mean()
+
+            self.figure.clear()
+            ax = self.figure.add_subplot(111)
+            sentiments = ['Positivo', 'Negativo']
+            values = [positive, negative]
+            ax.pie(values, labels=sentiments, autopct='%1.1f%%', colors=['green', 'red'], startangle=90)
+            ax.set_title("Distribuzione Analisi Sentiment (Flair)")
+
+        elif selected_model == "DistilBERT":
+            positive = self.dataframe["distilbert_sentiment"].apply(lambda x: x["score"] if x and x["label"] == "POSITIVE" else 0).mean()
+            negative = self.dataframe["distilbert_sentiment"].apply(lambda x: x["score"] if x and x["label"] == "NEGATIVE" else 0).mean()
+
+            self.figure.clear()
+            ax = self.figure.add_subplot(111)
+            sentiments = ['Positivo', 'Negativo']
+            values = [positive, negative]
+            ax.pie(values, labels=sentiments, autopct='%1.1f%%', colors=['green', 'red'], startangle=90)
+            ax.set_title("Distribuzione Analisi Sentiment (DistilBERT)")
+
         self.canvas.draw()
+
 
     def save_results(self):
         if self.dataframe is not None:
