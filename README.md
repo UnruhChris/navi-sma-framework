@@ -42,7 +42,7 @@ python NAVI.py
 Clone the repository and navigate to the folder:
 
 ```bash
-git clone https://github.com/yourusername/Navi.git
+git clone https://github.com/UnruhChris/Navi.git
 cd Navi
 ```
 
