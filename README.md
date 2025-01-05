@@ -12,11 +12,33 @@ Navi is a user-friendly framework designed for Social Media Analysis (SMA), prov
    - Advanced search parameter definition.
    - Topic modeling and semantic analysis support.
 
+---
+
+## Usage
+
+After setting up the environment, you can start using Navi for Social Media Analysis:
+
+- Clone the repository using `git clone https://github.com/yourusername/Navi.git` and navigate to the folder with `cd Navi`.
+- Activate the Python environment:
+  - For pip-based setup: Ensure all dependencies are installed using `pip install -r requirements.txt`.
+  - For Anaconda setup: Activate the `navi_env` environment with `conda activate navi_env`.
+- Run the application by executing `python NAVI.py` in the terminal.
+- Use the graphical interface to:
+  - Load your dataset (CSV files).
+  - Select text columns for preprocessing and analysis.
+  - Apply built-in preprocessing techniques like HTML tag removal, punctuation stripping, and more.
+  - Perform sentiment analysis using models like VADER, Flair, or DistilBERT.
+  - Visualize results with detailed graphs and export your processed data.
+
 ## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 ## Contact
-For inquiries or collaboration opportunities, feel free to open an issue on this repository.
 
----
-Made with ❤️ by Christian Gambardella
+For inquiries, suggestions, or collaboration opportunities, please open an issue on this repository or contact the author via:
+
+- **Email:** gambardella.chriss00@gmail.com
+- **GitHub Profile:** [Christian Gambardella](https://github.com/UnruhChris)
+
+
