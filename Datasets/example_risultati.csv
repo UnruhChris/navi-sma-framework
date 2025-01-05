@@ -1,0 +1,11 @@
+Text,sentiment_scores,compound_score,positive_score,neutral_score,negative_score
+love this product amazing,"{'neg': 0.0, 'neu': 0.2, 'pos': 0.8, 'compound': 0.8402}",0.8402,0.8,0.2,0.0
+This is the worst experience Ive ever had,"{'neg': 0.369, 'neu': 0.631, 'pos': 0.0, 'compound': -0.6249}",-0.6249,0.0,0.631,0.369
+This is test sentence with HTML tags,"{'neg': 0.0, 'neu': 0.822, 'pos': 0.178, 'compound': 0.0772}",0.0772,0.178,0.822,0.0
+Check out our new launch at NewLaunch,"{'neg': 0.0, 'neu': 1.0, 'pos': 0.0, 'compound': 0.0}",0.0,0.0,1.0,0.0
+Just some numbers here,"{'neg': 0.0, 'neu': 1.0, 'pos': 0.0, 'compound': 0.0}",0.0,0.0,1.0,0.0
+Text with some emojis and hashtags fun cool,"{'neg': 0.0, 'neu': 0.517, 'pos': 0.483, 'compound': 0.6808}",0.6808,0.483,0.517,0.0
+Another HTML example with punctuation,"{'neg': 0.0, 'neu': 1.0, 'pos': 0.0, 'compound': 0.0}",0.0,0.0,1.0,0.0
+No special characters or numbers here just plain text,"{'neg': 0.22, 'neu': 0.78, 'pos': 0.0, 'compound': -0.3089}",-0.3089,0.0,0.78,0.22
+,,,,,
+Stopwords are common words like and the or but etc,"{'neg': 0.0, 'neu': 0.837, 'pos': 0.163, 'compound': 0.1901}",0.1901,0.163,0.837,0.0
