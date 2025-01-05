@@ -19,4 +19,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 For inquiries or collaboration opportunities, feel free to open an issue on this repository.
 
 ---
-Made with ❤️ by [Your Name/Team]
+Made with ❤️ by Christian Gambardella
