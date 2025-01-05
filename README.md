@@ -14,11 +14,67 @@ Navi is a user-friendly framework designed for Social Media Analysis (SMA), prov
 
 ---
 
+## Installation
+
+### Using Pip
+
+Clone the repository and navigate to the folder:
+
+```bash
+git clone https://github.com/UnruhChris/Navi.git
+cd Navi
+```
+
+Ensure you have Python 3.8 or later installed. Install the required dependencies using:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the application with:
+
+```bash
+python NAVI.py
+```
+
+### Using Anaconda
+
+Clone the repository and navigate to the folder:
+
+```bash
+git clone https://github.com/UnruhChris/Navi.git
+cd Navi
+```
+
+Create a virtual environment using Anaconda:
+
+```bash
+conda create --name navi_env python=3.8
+```
+
+Activate the environment:
+
+```bash
+conda activate navi_env
+```
+
+Install the required dependencies using:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the application with:
+
+```bash
+python NAVI.py
+```
+
 ## Usage
 
 After setting up the environment, you can start using Navi for Social Media Analysis:
 
-- Clone the repository using `git clone https://github.com/yourusername/Navi.git` and navigate to the folder with `cd Navi`.
+- Clone the repository using `git clone https://github.com/UnruhChris/Navi.git` and navigate to the folder with `cd Navi`.
 - Activate the Python environment:
   - For pip-based setup: Ensure all dependencies are installed using `pip install -r requirements.txt`.
   - For Anaconda setup: Activate the `navi_env` environment with `conda activate navi_env`.
